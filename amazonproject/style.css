@@ -73,14 +73,14 @@ nav{
 }
 .inp{
     height: 40px;
-    width: 600px;
+    width: 630px;
     border-radius: 5px;
     padding-right: 0px;
     margin-right: 0px;
     
 }
 .ret{
-    margin-left: 300px;
+    margin-left: 50px;
     margin-right: 0px;
 }
 .div1{
@@ -155,3 +155,146 @@ nav{
     padding: 20px;
     
 }
+
+.sign{
+    color: white;
+    text-align: center;
+    height: 45px;
+    align-self:center;
+    background-color: #233448;
+    padding-left: 15px;
+    padding-right: 15px;
+    border-color: #233448;
+    border-style: none;
+    font-weight: bold;
+
+}
+
+@media (max-width: 1024px) {
+
+    .search {
+        width: 500px;
+    }
+
+    .inp {
+        width: 420px;
+    }
+
+    .ret {
+        margin-left: 50px;
+    }
+
+    .boxm, .boxn {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .box {
+        margin: 15px;
+    }
+
+    .div1 img {
+        width: 90%;
+        height: auto;
+    }
+}
+
+
+/* Mobile Phones (max-width: 768px) */
+@media (max-width: 768px) {
+
+    nav {
+        height: auto;
+    }
+
+    .navdiv {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .im {
+        margin-bottom: 10px;
+    }
+
+    .loc, .ret {
+        font-size: 12px;
+        padding: 5px;
+        margin: 5px;
+    }
+
+    .search {
+        width: 90%;
+        margin: 10px 0;
+        display: flex;
+        justify-content: center;
+    }
+
+    .inp {
+        width: 75%;
+    }
+
+    .btn {
+        width: 20%;
+    }
+
+    .login {
+        font-size: 22px;
+        width: 60px;
+        height: 45px;
+        margin: 10px;
+    }
+
+    .nav2 {
+        height: auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .bb {
+        padding: 8px;
+        font-size: 13px;
+    }
+
+    .div1 img {
+        width: 100%;
+        height: auto;
+    }
+
+    .boxm, .boxn {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .box {
+        width: 90%;
+        height: auto;
+    }
+
+    .imgg {
+        width: 90%;
+        height: auto;
+    }
+}
+
+
+/* Small Phones (max-width: 480px) */
+@media (max-width: 480px) {
+
+    .inp {
+        width: 70%;
+    }
+
+    .btn {
+        width: 25%;
+    }
+
+    .loc {
+        font-size: 11px;
+    }
+
+    .bb {
+        font-size: 12px;
+    }
+}
+
