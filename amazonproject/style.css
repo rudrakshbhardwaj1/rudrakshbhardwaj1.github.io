@@ -275,6 +275,31 @@ nav{
         width: 90%;
         height: auto;
     }
+
+    .hamburger {
+        display: block;
+    }
+
+    .nav-items {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #233448;
+    }
+
+    .nav-items.active {
+        display: flex;
+    }
+
+    .search {
+        width: 90%;
+    }
+
+    .loc, .sign, .ret {
+        width: 100%;
+        text-align: center;
+    }
+
 }
 
 
@@ -298,3 +323,18 @@ nav{
     }
 }
 
+.hamburger {
+    display: none;
+    font-size: 26px;
+    color: white;
+    cursor: pointer;
+    align-self: center;
+    padding: 10px;
+}
+
+
+.nav-items {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
