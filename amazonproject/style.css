@@ -88,12 +88,12 @@ nav {
   height: 270px;
   width: 350px;
   background-color: rgb(255, 255, 255);
-  border: 1px solid;
+  
   text-align: center;
 
   margin: auto;
   padding-top: 20px;
-  border-radius: 25px;
+  border-radius: 5px;
 }
 .boxm {
   display: flex;
@@ -101,7 +101,7 @@ nav {
 .imgg {
   height: 200px;
   width: fit-content;
-  border-radius: 15px;
+  border-radius: 1px;
   margin-top: 10px;
 }
 .boxn {
