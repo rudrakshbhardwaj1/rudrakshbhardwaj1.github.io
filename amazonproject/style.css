@@ -83,6 +83,7 @@ nav {
   align-items: center;
   display: flex;
   justify-content: center;
+  margin-bottom: 30px;
 }
 .box {
   height: 270px;
