@@ -1,122 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    
-</head>
-<body>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body>
     <nav>
-        <div class="navdiv">
-
-            
-        <img class="im" src="images/images.png" alt="" height="60px"width="120px">
+      <div class="navdiv">
+        <img
+          class="im"
+          src="images/images.png"
+          alt=""
+          height="60px"
+          width="120px"
+        />
         <!-- Hamburger -->
-<div class="hamburger" onclick="toggleMenu()">
-    <i class="fa-solid fa-bars"></i>
-</div>
+        <div class="hamburger" onclick="toggleMenu()">
+          <i class="fa-solid fa-bars"></i>
+        </div>
 
-        
-
-         <!-- <a class="link" href="#">Bestseller</a>
+        <!-- <a class="link" href="#">Bestseller</a>
         <a class="link" href="#">Electronics</a>
         <a class="link" href="#">Offers</a>
         <a class="link" href="#">Shoping</a> -->
         <div class="nav-items">
+          <button class="loc">
+            Delivering to Delhi <br /><i class="fa-solid fa-location-dot"></i>
+            110001 Update location
+          </button>
 
+          <div class="search">
+            <input
+              width="300px"
+              class="inp"
+              type="text"
+              placeholder="Search products"
+            />
+            <button class="btn">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+          </div>
 
+          <button class="loc ret">
+            Returns <br />
+            & Orders
+          </button>
+          <button class="loc sign">
+            Hello, sign in <br />
+            Account & Lists
+          </button>
 
-        <button class="loc">
-     Delivering to Delhi <br><i class="fa-solid fa-location-dot"></i>
-110001 Update location
-        </button>
-
-        <div class="search">
-            <input width="300px" class="inp" type="text" placeholder="Search products">
-            <button  class="btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+          <button class="login">
+            <i class="fa-solid fa-cart-arrow-down"></i>
+          </button>
         </div>
-
-        <button class="loc ret">
-    Returns <br> & Orders
-        </button>
-        <button class="loc sign">Hello, sign in <br>
-Account & Lists</button>
-
-        <button  class="login"><i class="fa-solid fa-cart-arrow-down"></i></button>
-        </div>
-        
-
-       
-        
-        </div>
-
+      </div>
     </nav>
     <div class="nav2">
-
-        <label class="bb" for="shoping">All</label>
-        <label class="bb" for="shoping">shoping</label>
-        <label class="bb" for="shoping">Mx Player</label>
-        <label class="bb" for="shoping">sell</label>
-        <label class="bb" for="shoping">Bestseller</label>
-        <label class="bb" for="shoping">Mobiles</label>
-        <label class="bb" for="shoping">Customer Service</label>
-        <label class="bb" for="shoping">prime</label>
-        <label class="bb" for="shoping">fashion</label>
-        <label class="bb" for="shoping">electronics</label>
-        <label class="bb" for="shoping">Books</label>
-        <label class="bb" for="shoping">Computers</label>
-        <label class="bb" for="shoping">Gift Cards</label>
-
+      <label class="bb" for="shoping">All</label>
+      <label class="bb" for="shoping">shoping</label>
+      <label class="bb" for="shoping">Mx Player</label>
+      <label class="bb" for="shoping">sell</label>
+      <label class="bb" for="shoping">Bestseller</label>
+      <label class="bb" for="shoping">Mobiles</label>
+      <label class="bb" for="shoping">Customer Service</label>
+      <label class="bb" for="shoping">prime</label>
+      <label class="bb" for="shoping">fashion</label>
+      <label class="bb" for="shoping">electronics</label>
+      <label class="bb" for="shoping">Books</label>
+      <label class="bb" for="shoping">Computers</label>
+      <label class="bb" for="shoping">Gift Cards</label>
     </div>
     <div class="div1">
-        <img height="300px" width="800px" src="images/img1.png" alt="">
-
+      <img height="300px" width="800px" src="images/img1.png" alt="" />
     </div>
     <div class="boxm">
-        <div class="box box1">
-            <h3>Revamp your home in style</h3>
-            <img class="imgg" src="images/img2.jpg" alt="">
-        </div>
-        <div class="box box2">
-            <h3>Bulk order discounts + Up to 18% GST savings</h3>
-            <img class="imgg" src="images/img3.jpg" alt="">
-        </div>
-        <div class="box box3">
-            <h3>Appliances for your home | Up to 55% off</h3>
-            <img class="imgg" src="images/img4.jpg" alt="">
-        </div>
-        <div class="box box4">
-            <h3>Starting ₹49 | Deals on home essentials</h3>
-            <img class="imgg" src="images/img5.jpg" alt="">
-        </div>
-
+      <div class="box box1">
+        <h3>Revamp your home in style</h3>
+        <img class="imgg" src="images/img2.jpg" alt="" />
+      </div>
+      <div class="box box2">
+        <h3>Bulk order discounts + Up to 18% GST savings</h3>
+        <img class="imgg" src="images/img3.jpg" alt="" />
+      </div>
+      <div class="box box3">
+        <h3>Appliances for your home | Up to 55% off</h3>
+        <img class="imgg" src="images/img4.jpg" alt="" />
+      </div>
+      <div class="box box4">
+        <h3>Starting ₹49 | Deals on home essentials</h3>
+        <img class="imgg" src="images/img5.jpg" alt="" />
+      </div>
     </div>
 
     <div class="boxn">
-        <div class="box box5">box5</div>
-        <div class="box box6">box6</div>
-        <div class="box box7">box7</div>
-        <div class="box box8">box8</div>
+      <div class="box box5">box5</div>
+      <div class="box box6">box6</div>
+      <div class="box box7">box7</div>
+      <div class="box box8">box8</div>
     </div>
 
-    <nav class="navend">
-        Back To Top
-    </nav>
+    <nav class="navend">Back To Top</nav>
 
     <div class="div3">
-        <h2 class="ab" >Connect with Us</h2>
-        <h3 class="ab">Facebook</h3>
-        <h3 class="ab">Twitter</h3>
-        <h3 class="ab">Instagram</h3>
-
-
-
-
+      <h2 class="ab">Connect with Us</h2>
+      <h3 class="ab">Facebook</h3>
+      <h3 class="ab">Twitter</h3>
+      <h3 class="ab">Instagram</h3>
     </div>
-
-
-</body>
+  </body>
 </html>
