@@ -1,0 +1,78 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#1f1c2c,#928dab);
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.container{
+    width:350px;
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,.3);
+}
+
+h1{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.input-group{
+    display:flex;
+    justify-content:space-between;
+    margin:12px 0;
+}
+
+input[type=number]{
+    width:70px;
+    padding:6px;
+}
+
+button{
+    width:100%;
+    padding:10px;
+    margin-top:15px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    background:#4CAF50;
+    color:white;
+    font-size:16px;
+}
+
+button:hover{
+    opacity:.9;
+}
+
+.output{
+    display:flex;
+    margin-top:20px;
+}
+
+#password{
+    flex:1;
+    padding:10px;
+    font-size:18px;
+}
+
+#copyBtn{
+    width:90px;
+    margin-top:0;
+    margin-left:10px;
+    background:#2196F3;
+}
+
+#strength{
+    margin-top:15px;
+    text-align:center;
+    font-weight:bold;
+}
