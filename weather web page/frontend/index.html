@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Check current weather and 5-day forecast for any city">
+  <meta name="theme-color" content="#667eea">
+  <title>Weather Now - Current Weather & Forecast</title>
+  
+  <link rel="stylesheet" href="styles/reset.css">
+  <link rel="stylesheet" href="styles/variables.css">
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/components.css">
+  <link rel="stylesheet" href="styles/layout.css">
+  <link rel="stylesheet" href="styles/responsive.css">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>⛅</text></svg>">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <div class="app-wrapper">
+    <main id="main-content" class="app-container">
+      <article class="weather-card">
+        
+        <header class="card-header">
+          <div class="header-content">
+            <h1 class="app-title">Weather Now</h1>
+            <p class="app-subtitle">Real-time weather updates</p>
+          </div>
+          <button 
+            class="theme-toggle" 
+            id="themeToggle" 
+            aria-label="Toggle between light and dark theme"
+            aria-pressed="false"
+          >
+            <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path d="M12 18C8.68629 18 6 15.3137 6 12C6 8.68629 8.68629 6 12 6C15.3137 6 18 8.68629 18 12C18 15.3137 15.3137 18 12 18ZM12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16ZM11 1H13V4H11V1ZM11 20H13V23H11V20ZM3.51472 4.92893L4.92893 3.51472L7.05025 5.63604L5.63604 7.05025L3.51472 4.92893ZM16.9497 18.364L18.364 16.9497L20.4853 19.0711L19.0711 20.4853L16.9497 18.364ZM19.0711 3.51472L20.4853 4.92893L18.364 7.05025L16.9497 5.63604L19.0711 3.51472ZM5.63604 16.9497L7.05025 18.364L4.92893 20.4853L3.51472 19.0711L5.63604 16.9497ZM23 11V13H20V11H23ZM4 11V13H1V11H4Z"/>
+            </svg>
+            <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path d="M10 7C10 10.866 13.134 14 17 14C18.9584 14 20.729 13.1957 21.9995 11.8995C22 11.933 22 11.9665 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C12.0335 2 12.067 2 12.1005 2.00049C10.8043 3.27098 10 5.04157 10 7Z"/>
+            </svg>
+          </button>
+        </header>
+
+        <section class="search-section">
+          <form class="search-box" id="searchForm" role="search">
+            <div class="search-input-wrapper">
+              <input 
+                type="text" 
+                id="cityInput" 
+                class="search-input"
+                placeholder="Enter city name or zip code..." 
+                autocomplete="off"
+                aria-label="Search for a city"
+                spellcheck="false"
+              />
+              <button 
+                type="submit"
+                class="search-btn" 
+                id="searchBtn"
+                aria-label="Search weather"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                  <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+              </button>
+            </div>
+            <!-- Recent Searches (Optional) -->
+            <div class="recent-searches" id="recentSearches" hidden>
+              <p class="recent-label">Recent:</p>
+              <ul class="recent-list" id="recentList"></ul>
+            </div>
+          </form>
+        </section>
+
+        <div class="loader" id="loader" hidden aria-label="Loading weather data" role="status"></div>
+
+        <div class="alert alert-error" id="errorMsg" hidden role="alert"></div>
+
+        <section class="weather-section" id="weatherInfo" hidden>
+          <div class="location-header">
+            <h2 class="location-name" id="cityName">--</h2>
+            <p class="location-date" id="dateTime">--</p>
+          </div>
+
+          <div class="weather-main">
+            <div class="weather-visual">
+              <img 
+                id="weatherIcon" 
+                class="weather-icon" 
+                src="" 
+                alt="Current weather icon"
+                width="90"
+                height="90"
+              >
+            </div>
+            <div class="weather-temp-wrapper">
+              <div class="temperature" id="temperature">--°C</div>
+              <p class="weather-description" id="weatherDesc">--</p>
+            </div>
+          </div>
+
+          <!-- Weather Details Grid -->
+          <section class="details-section">
+            <h3 class="section-title">Weather Details</h3>
+            <div class="details-grid">
+              <div class="detail-card">
+                <span class="detail-icon">💧</span>
+                <span class="detail-label">Humidity</span>
+                <span class="detail-value" id="humidity">--%</span>
+              </div>
+              <div class="detail-card">
+                <span class="detail-icon">💨</span>
+                <span class="detail-label">Wind Speed</span>
+                <span class="detail-value" id="wind">-- km/h</span>
+              </div>
+              <div class="detail-card">
+                <span class="detail-icon">🌡️</span>
+                <span class="detail-label">Feels Like</span>
+                <span class="detail-value" id="feelsLike">--°C</span>
+              </div>
+              <div class="detail-card">
+                <span class="detail-icon">👁️</span>
+                <span class="detail-label">Visibility</span>
+                <span class="detail-value" id="visibility">-- km</span>
+              </div>
+              <div class="detail-card">
+                <span class="detail-icon">🌪️</span>
+                <span class="detail-label">Pressure</span>
+                <span class="detail-value" id="pressure">-- hPa</span>
+              </div>
+              <div class="detail-card">
+                <span class="detail-icon">☁️</span>
+                <span class="detail-label">Cloudiness</span>
+                <span class="detail-value" id="cloudiness">-- %</span>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section class="forecast-section" id="forecastContainer" hidden>
+          <h3 class="section-title">5-Day Forecast</h3>
+          <div class="forecast-wrapper">
+            <div class="forecast-cards" id="forecastCards" role="list"></div>
+          </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="card-footer">
+          <p class="footer-text">
+            Last updated: <span id="lastUpdate">--</span>
+          </p>
+        </footer>
+
+      </article>
+    </main>
+  </div>
+
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+
+  <!-- Scripts -->
+  <script src="js/utils.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/weather.js"></script>
+  <script src="js/forecast.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
