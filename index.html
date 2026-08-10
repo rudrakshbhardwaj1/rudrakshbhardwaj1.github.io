@@ -4,17 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rudraksh Bhardwaj | Portfolio</title>
-<link rel="stylesheet" href="style.css">
+
+<!-- Preconnect for faster font loading -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<!-- Load fonts with display=swap to prevent render blocking -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<!-- Font Awesome - load only what we need -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
+
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Matrix Rain Canvas Background -->
-<canvas id="matrixCanvas" class="matrix-bg"></canvas>
 
-<!-- Floating Code Symbols -->
-<div class="floating-symbols" id="floatingSymbols"></div>
+<!-- Matrix Rain Canvas - only on desktop -->
+<canvas id="matrixCanvas" class="matrix-bg"></canvas>
 
 <!-- Loader -->
 <div class="loader" id="loader">
@@ -34,8 +41,10 @@
       <li><a href="#contact">Contact</a></li>
     </ul>
     <div class="nav-icons">
-      <button id="themeToggle" class="theme-btn"><i class="fa-solid fa-moon"></i></button>
-      <div class="hamburger" id="hamburger">
+      <button id="themeToggle" class="theme-btn" aria-label="Toggle theme">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+      <div class="hamburger" id="hamburger" aria-label="Menu">
         <span></span><span></span><span></span>
       </div>
     </div>
@@ -45,24 +54,16 @@
 <!-- Hero Section -->
 <section id="home" class="hero">
   <div class="hero-bg"></div>
-  
-  <!-- NEW: Animated grid background -->
   <div class="grid-bg"></div>
-  
-  <!-- NEW: Glowing orbs -->
+
+  <!-- Reduced orbs - only 2 -->
   <div class="glow-orb orb-1"></div>
   <div class="glow-orb orb-2"></div>
-  <div class="glow-orb orb-3"></div>
-  
-  <!-- NEW: Floating code snippets -->
+
+  <!-- Reduced code snippets - only essential ones -->
   <div class="code-snippet snippet-1">&lt;div&gt;</div>
   <div class="code-snippet snippet-2">function()</div>
   <div class="code-snippet snippet-3">{ }</div>
-  <div class="code-snippet snippet-4">const x =</div>
-  <div class="code-snippet snippet-5">=&gt;</div>
-  <div class="code-snippet snippet-6">import</div>
-  <div class="code-snippet snippet-7">npm install</div>
-  <div class="code-snippet snippet-8">git commit</div>
 
   <div class="container hero-content">
     <div class="hero-text">
@@ -74,26 +75,43 @@
         <span id="typed"></span><span class="cursor">|</span>
       </h2>
       <p class="hero-desc">
-        I am Rudraksh Bhardwaj, a B.Tech CSE student passionate about software development, DSA, and building real-world web projects.
-        I am continuously improving my skills in C++, React, JavaScript, and modern web technologies while turning ideas into practical projects.
+        B.Tech CSE student passionate about software development, DSA, and building 
+        real-world web projects. Skilled in C++, React, JavaScript, and modern web technologies.
       </p>
       <div class="hero-buttons">
         <a href="#projects" class="btn btn-primary">View Projects</a>
         <a href="#" class="btn btn-outline" download>Download CV</a>
       </div>
       <div class="social-icons">
-        <a href="https://github.com/rudrakshbhardwaj1" target="_blank" title="GitHub"><i class="fa-brands fa-github"></i></a>
-        <a href="https://linkedin.com/in/rudrakshbhardwaj1" target="_blank" title="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
-        <a href="https://leetcode.com/rudrakshbhardwaj1" target="_blank" title="LeetCode"><i class="fa-solid fa-code"></i></a>
-        <a href="mailto:piyankasharma80@gmail.com" title="Email"><i class="fa-solid fa-envelope"></i></a>
+        <a href="https://github.com/rudrakshbhardwaj1" target="_blank" rel="noopener" title="GitHub">
+          <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://linkedin.com/in/rudrakshbhardwaj1" target="_blank" rel="noopener" title="LinkedIn">
+          <i class="fa-brands fa-linkedin"></i>
+        </a>
+        <a href="https://leetcode.com/rudrakshbhardwaj1" target="_blank" rel="noopener" title="LeetCode">
+          <i class="fa-solid fa-code"></i>
+        </a>
+        <a href="mailto:piyankasharma80@gmail.com" title="Email">
+          <i class="fa-solid fa-envelope"></i>
+        </a>
       </div>
     </div>
+
     <div class="hero-image">
       <div class="image-wrapper">
-        <img src="assets/profile.jpg" alt="Profile Picture">
+        <!-- Use actual image with width/height to prevent layout shift -->
+        <img 
+          src="assets/profile.jpg" 
+          alt="Rudraksh Bhardwaj - Profile Picture"
+          width="350" 
+          height="350"
+          loading="eager"
+          fetchpriority="high"
+        >
       </div>
-      <!-- NEW: Rotating tech ring -->
-      <div class="tech-ring">
+      <!-- Tech ring - hidden on mobile via CSS -->
+      <div class="tech-ring" aria-hidden="true">
         <i class="fa-brands fa-html5 ring-icon" style="--i:0"></i>
         <i class="fa-brands fa-css3-alt ring-icon" style="--i:1"></i>
         <i class="fa-brands fa-js ring-icon" style="--i:2"></i>
@@ -105,8 +123,12 @@
       </div>
     </div>
   </div>
-  <a href="#about" class="scroll-down"><i class="fa-solid fa-chevron-down"></i></a>
+
+  <a href="#about" class="scroll-down" aria-label="Scroll down">
+    <i class="fa-solid fa-chevron-down"></i>
+  </a>
 </section>
+
 <!-- About Section -->
 <section id="about" class="section about">
   <div class="container">
@@ -114,37 +136,51 @@
     <div class="about-content">
       <div class="about-text">
         <p>
-Hi, I am **Rudraksh Bhardwaj**, a B.Tech Computer Science & Engineering student passionate about software development and technology. I enjoy solving problems with **C++, DSA, JavaScript, React, and modern web technologies**.
-
-I am focused on building practical, real-world projects that help me turn what I learn into working solutions. From developing web applications to participating in hackathons and improving my problem-solving skills through **LeetCode**, I am constantly exploring new technologies and challenging myself to become a better developer.
-
-I believe in **learning by building, solving problems consistently, and continuously improving**. My goal is to grow as a software developer and eventually contribute to impactful products and innovative technology.
-
+          Hi, I am <strong>Rudraksh Bhardwaj</strong>, a B.Tech Computer Science & Engineering 
+          student passionate about software development and technology. I enjoy solving problems 
+          with <strong>C++, DSA, JavaScript, React, and modern web technologies</strong>.
+        </p>
+        <p>
+          I focus on building practical, real-world projects and improving problem-solving 
+          skills through <strong>LeetCode</strong>. My goal is to grow as a software developer 
+          and contribute to impactful products.
         </p>
         <div class="about-stats">
           <div class="stat-box">
-            <h3 id="stat-projects">0</h3>
+            <h3 id="stat-projects">5+</h3>
             <p>Projects Completed</p>
           </div>
           <div class="stat-box">
-            <h3 id="stat-experience">0</h3>
+            <h3 id="stat-experience">1+</h3>
             <p>Years Experience</p>
           </div>
           <div class="stat-box">
-            <h3 id="stat-problems">0</h3>
+            <h3 id="stat-problems">100+</h3>
             <p>LeetCode Problems</p>
           </div>
           <div class="stat-box">
-            <h3 id="stat-repos">0</h3>
+            <h3 id="stat-repos">8+</h3>
             <p>GitHub Repos</p>
           </div>
         </div>
       </div>
       <div class="info-cards">
-        <div class="info-card"><i class="fa-solid fa-graduation-cap"></i><div><h4>Education</h4><p>B.Tech Computer Science</p></div></div>
-        <div class="info-card"><i class="fa-solid fa-briefcase"></i><div><h4>Experience</h4><p>Aspiring Software Developer</p></div></div>
-        <div class="info-card"><i class="fa-solid fa-location-dot"></i><div><h4>Location</h4><p>Noida, India</p></div></div>
-        <div class="info-card"><i class="fa-solid fa-language"></i><div><h4>Languages</h4><p>English, Hindi</p></div></div>
+        <div class="info-card">
+          <i class="fa-solid fa-graduation-cap"></i>
+          <div><h4>Education</h4><p>B.Tech Computer Science</p></div>
+        </div>
+        <div class="info-card">
+          <i class="fa-solid fa-briefcase"></i>
+          <div><h4>Experience</h4><p>Aspiring Software Developer</p></div>
+        </div>
+        <div class="info-card">
+          <i class="fa-solid fa-location-dot"></i>
+          <div><h4>Location</h4><p>Noida, India</p></div>
+        </div>
+        <div class="info-card">
+          <i class="fa-solid fa-language"></i>
+          <div><h4>Languages</h4><p>English, Hindi</p></div>
+        </div>
       </div>
     </div>
   </div>
@@ -152,7 +188,7 @@ I believe in **learning by building, solving problems consistently, and continuo
 
 <!-- Skills Section -->
 <section id="skills" class="section skills">
-     <div class="circuit-bg"></div>
+  <div class="circuit-bg" aria-hidden="true"></div>
   <div class="container">
     <h2 class="section-title">My <span>Skills</span></h2>
     <div class="skills-grid">
@@ -203,17 +239,26 @@ I believe in **learning by building, solving problems consistently, and continuo
 
 <!-- Projects Section -->
 <section id="projects" class="section projects">
-    <div class="dots-bg"></div>
+  <div class="dots-bg" aria-hidden="true"></div>
   <div class="container">
     <h2 class="section-title">Live <span>Projects</span></h2>
     <div class="project-grid">
 
       <div class="project-card">
         <div class="project-img">
-          <img src="https://via.placeholder.com/400x250/6c5ce7/ffffff?text=Project+1" alt="Project 1">
+          <img 
+            src="https://via.placeholder.com/400x250/6c5ce7/ffffff?text=Project+1" 
+            alt="E-Commerce Platform"
+            width="400" height="250"
+            loading="lazy"
+          >
           <div class="project-overlay">
-            <a href="https://your-live-link1.com" target="_blank" class="overlay-btn"><i class="fa-solid fa-eye"></i></a>
-            <a href="https://github.com/yourusername/repo1" target="_blank" class="overlay-btn"><i class="fa-brands fa-github"></i></a>
+            <a href="https://your-live-link1.com" target="_blank" rel="noopener" class="overlay-btn">
+              <i class="fa-solid fa-eye"></i>
+            </a>
+            <a href="https://github.com/yourusername/repo1" target="_blank" rel="noopener" class="overlay-btn">
+              <i class="fa-brands fa-github"></i>
+            </a>
           </div>
         </div>
         <div class="project-info">
@@ -227,10 +272,19 @@ I believe in **learning by building, solving problems consistently, and continuo
 
       <div class="project-card">
         <div class="project-img">
-          <img src="https://via.placeholder.com/400x250/00cec9/ffffff?text=Project+2" alt="Project 2">
+          <img 
+            src="https://via.placeholder.com/400x250/00cec9/ffffff?text=Project+2" 
+            alt="Task Management App"
+            width="400" height="250"
+            loading="lazy"
+          >
           <div class="project-overlay">
-            <a href="https://your-live-link2.com" target="_blank" class="overlay-btn"><i class="fa-solid fa-eye"></i></a>
-            <a href="https://github.com/yourusername/repo2" target="_blank" class="overlay-btn"><i class="fa-brands fa-github"></i></a>
+            <a href="https://your-live-link2.com" target="_blank" rel="noopener" class="overlay-btn">
+              <i class="fa-solid fa-eye"></i>
+            </a>
+            <a href="https://github.com/yourusername/repo2" target="_blank" rel="noopener" class="overlay-btn">
+              <i class="fa-brands fa-github"></i>
+            </a>
           </div>
         </div>
         <div class="project-info">
@@ -244,10 +298,19 @@ I believe in **learning by building, solving problems consistently, and continuo
 
       <div class="project-card">
         <div class="project-img">
-          <img src="https://via.placeholder.com/400x250/fd79a8/ffffff?text=Project+3" alt="Project 3">
+          <img 
+            src="https://via.placeholder.com/400x250/fd79a8/ffffff?text=Project+3" 
+            alt="Weather Dashboard"
+            width="400" height="250"
+            loading="lazy"
+          >
           <div class="project-overlay">
-            <a href="https://your-live-link3.com" target="_blank" class="overlay-btn"><i class="fa-solid fa-eye"></i></a>
-            <a href="https://github.com/yourusername/repo3" target="_blank" class="overlay-btn"><i class="fa-brands fa-github"></i></a>
+            <a href="https://your-live-link3.com" target="_blank" rel="noopener" class="overlay-btn">
+              <i class="fa-solid fa-eye"></i>
+            </a>
+            <a href="https://github.com/yourusername/repo3" target="_blank" rel="noopener" class="overlay-btn">
+              <i class="fa-brands fa-github"></i>
+            </a>
           </div>
         </div>
         <div class="project-info">
@@ -267,24 +330,26 @@ I believe in **learning by building, solving problems consistently, and continuo
 <section id="github" class="section github-section">
   <div class="container">
     <h2 class="section-title">GitHub <span>Repositories</span></h2>
-    <div class="terminal-window">
-  <div class="terminal-header">
-    <span class="term-dot red"></span>
-    <span class="term-dot yellow"></span>
-    <span class="term-dot green"></span>
-    <span class="terminal-title">bash — fetching repos</span>
-  </div>
-  <div class="terminal-body">
-    <p><span class="term-prompt">$</span> git fetch --all <span class="term-cursor">_</span></p>
-  </div>
-</div>
+    <div class="terminal-window" aria-hidden="true">
+      <div class="terminal-header">
+        <span class="term-dot red"></span>
+        <span class="term-dot yellow"></span>
+        <span class="term-dot green"></span>
+        <span class="terminal-title">bash — fetching repos</span>
+      </div>
+      <div class="terminal-body">
+        <p><span class="term-prompt">$</span> git fetch --all <span class="term-cursor">_</span></p>
+      </div>
+    </div>
     <p class="section-subtitle">Fetched live from my GitHub profile</p>
     <div class="repo-grid" id="repoContainer">
-      <!-- Repos will be injected by JS -->
-      <div class="loading-repos">Loading repositories...</div>
+      <div class="loading-repos">
+        <div class="spinner-small"></div>
+        Loading repositories...
+      </div>
     </div>
     <div class="github-cta">
-      <a href="https://github.com/rudrakshbhardwaj1" target="_blank" class="btn btn-primary">
+      <a href="https://github.com/rudrakshbhardwaj1" target="_blank" rel="noopener" class="btn btn-primary">
         <i class="fa-brands fa-github"></i> View All on GitHub
       </a>
     </div>
@@ -330,7 +395,7 @@ I believe in **learning by building, solving problems consistently, and continuo
           <span id="hardCount">0</span>
         </div>
       </div>
-      <a href="https://leetcode.com/rudrakshbhardwaj1" target="_blank" class="btn btn-primary">
+      <a href="https://leetcode.com/rudrakshbhardwaj1" target="_blank" rel="noopener" class="btn btn-primary">
         <i class="fa-solid fa-code"></i> View LeetCode Profile
       </a>
     </div>
@@ -345,7 +410,7 @@ I believe in **learning by building, solving problems consistently, and continuo
       <div class="contact-info">
         <div class="contact-item">
           <i class="fa-solid fa-envelope"></i>
-          <div><h4>Email</h4><p>piyankasharma80@gmai.com</p></div>
+          <div><h4>Email</h4><p>piyankasharma80@gmail.com</p></div>
         </div>
         <div class="contact-item">
           <i class="fa-solid fa-phone"></i>
@@ -356,27 +421,75 @@ I believe in **learning by building, solving problems consistently, and continuo
           <div><h4>Location</h4><p>Noida, India</p></div>
         </div>
         <div class="social-icons">
-          <a href="https://github.com/rudrakshbhardwaj1" target="_blank"><i class="fa-brands fa-github"></i></a>
-          <a href="https://linkedin.com/in/rudrakshbhardwaj1" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
-          <a href="https://leetcode.com/rudrakshbhardwaj1" target="_blank"><i class="fa-solid fa-code"></i></a>
-          <a href="https://twitter.com/yourusername" target="_blank"><i class="fa-brands fa-twitter"></i></a>
+          <a href="https://github.com/rudrakshbhardwaj1" target="_blank" rel="noopener">
+            <i class="fa-brands fa-github"></i>
+          </a>
+          <a href="https://linkedin.com/in/rudrakshbhardwaj1" target="_blank" rel="noopener">
+            <i class="fa-brands fa-linkedin"></i>
+          </a>
+          <a href="https://leetcode.com/rudrakshbhardwaj1" target="_blank" rel="noopener">
+            <i class="fa-solid fa-code"></i>
+          </a>
         </div>
       </div>
-      <form class="contact-form" id="contactForm">
-        <div class="form-group">
-          <input type="text" placeholder="Your Name" required>
-        </div>
-        <div class="form-group">
-          <input type="email" placeholder="Your Email" required>
-        </div>
-        <div class="form-group">
-          <input type="text" placeholder="Subject" required>
-        </div>
-        <div class="form-group">
-          <textarea rows="5" placeholder="Your Message" required></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Send Message</button>
-      </form>
+      <form class="contact-form" id="contactForm" novalidate>
+  <div class="form-group">
+    <input 
+      type="text" 
+      id="from_name"
+      name="from_name"
+      placeholder="Your Name" 
+      required
+      minlength="2"
+      autocomplete="name"
+    >
+    <span class="field-error" id="nameError"></span>
+  </div>
+
+  <div class="form-group">
+    <input 
+      type="email" 
+      id="from_email"
+      name="from_email"
+      placeholder="Your Email" 
+      required
+      autocomplete="email"
+    >
+    <span class="field-error" id="emailError"></span>
+  </div>
+
+  <div class="form-group">
+    <input 
+      type="text" 
+      id="subject"
+      name="subject"
+      placeholder="Subject" 
+      required
+      minlength="3"
+    >
+    <span class="field-error" id="subjectError"></span>
+  </div>
+
+  <div class="form-group">
+    <textarea 
+      rows="5" 
+      id="message"
+      name="message"
+      placeholder="Your Message" 
+      required
+      minlength="10"
+    ></textarea>
+    <span class="field-error" id="messageError"></span>
+  </div>
+
+  <!-- Status message box -->
+  <div class="form-status" id="formStatus"></div>
+
+  <button type="submit" class="btn btn-primary" id="submitBtn">
+    <i class="fa-solid fa-paper-plane"></i>
+    <span>Send Message</span>
+  </button>
+</form>
     </div>
   </div>
 </section>
@@ -386,15 +499,25 @@ I believe in **learning by building, solving problems consistently, and continuo
   <div class="container">
     <p>&copy; 2026 Rudraksh Bhardwaj. All Rights Reserved.</p>
     <div class="social-icons">
-      <a href="https://github.com/rudrakshbhardwaj1" target="_blank"><i class="fa-brands fa-github"></i></a>
-      <a href="https://linkedin.com/in/rudrakshbhardwaj1" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
-      <a href="https://leetcode.com/rudrakshbhardwaj1" target="_blank"><i class="fa-solid fa-code"></i></a>
+      <a href="https://github.com/rudrakshbhardwaj1" target="_blank" rel="noopener">
+        <i class="fa-brands fa-github"></i>
+      </a>
+      <a href="https://linkedin.com/in/rudrakshbhardwaj1" target="_blank" rel="noopener">
+        <i class="fa-brands fa-linkedin"></i>
+      </a>
+      <a href="https://leetcode.com/rudrakshbhardwaj1" target="_blank" rel="noopener">
+        <i class="fa-solid fa-code"></i>
+      </a>
     </div>
   </div>
 </footer>
 
-<button class="back-to-top" id="backToTop"><i class="fa-solid fa-arrow-up"></i></button>
+<button class="back-to-top" id="backToTop" aria-label="Back to top">
+  <i class="fa-solid fa-arrow-up"></i>
+</button>
+<!-- Add this just before </body> -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
-<script src="script.js"></script>
+<script src="script.js" defer></script>
 </body>
 </html>

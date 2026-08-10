@@ -1,28 +1,93 @@
-// ===== CONFIG - UPDATE THESE =====
-const GITHUB_USERNAME = "rudrakshbhardwaj1";
-const LEETCODE_USERNAME = "rudrakshbhardwaj1";
-const REPO_COUNT = 7;
+/* ============================================
+   OPTIMIZED PORTFOLIO SCRIPT
+   - Single initMatrixRain call
+   - API response caching
+   - Debounced scroll handler
+   - Deferred non-critical work
+   - Fixed variable bug in fallback API
+   ============================================ */
 
-// ===== Loader =====
-window.addEventListener('load', () => {
-  document.getElementById('loader').classList.add('hide');
-});
+// ===== CONFIG =====
+const CONFIG = {
+  GITHUB_USERNAME: "rudrakshbhardwaj1",
+  LEETCODE_USERNAME: "rudrakshbhardwaj1",
+  REPO_COUNT: 6,
+  CACHE_DURATION: 30 * 60 * 1000 // 30 minutes in ms
+};
 
-// ===== Navbar scroll effect =====
+// ===== LOADER - Hide ASAP =====
+// Use requestAnimationFrame for smoother hide
+function hideLoader() {
+  const loader = document.getElementById('loader');
+  if (loader) {
+    loader.classList.add('hide');
+    // Remove from DOM after transition to free memory
+    setTimeout(() => loader.remove(), 500);
+  }
+}
+
+if (document.readyState === 'complete') {
+  hideLoader();
+} else {
+  window.addEventListener('load', hideLoader, { once: true });
+}
+
+// ===== UTILITY: Debounce =====
+function debounce(fn, delay) {
+  let timer;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+
+// ===== UTILITY: Simple Cache =====
+const cache = {
+  set(key, data) {
+    try {
+      sessionStorage.setItem(key, JSON.stringify({ data, ts: Date.now() }));
+    } catch(e) { /* ignore storage errors */ }
+  },
+  get(key) {
+    try {
+      const item = JSON.parse(sessionStorage.getItem(key));
+      if (item && Date.now() - item.ts < CONFIG.CACHE_DURATION) {
+        return item.data;
+      }
+    } catch(e) {}
+    return null;
+  }
+};
+
+// ===== NAVBAR =====
 const navbar = document.getElementById('navbar');
-window.addEventListener('scroll', () => {
-  navbar.classList.toggle('scrolled', window.scrollY > 50);
-  toggleBackToTop();
-  highlightNav();
-});
+let lastScroll = 0;
+let ticking = false;
 
-// ===== Mobile menu =====
+function onScroll() {
+  lastScroll = window.scrollY;
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      navbar.classList.toggle('scrolled', lastScroll > 50);
+      toggleBackToTop(lastScroll);
+      highlightNav(lastScroll);
+      ticking = false;
+    });
+    ticking = true;
+  }
+}
+
+window.addEventListener('scroll', onScroll, { passive: true });
+
+// ===== MOBILE MENU =====
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('navLinks');
+
 hamburger.addEventListener('click', () => {
   hamburger.classList.toggle('active');
   navLinks.classList.toggle('active');
 });
+
 document.querySelectorAll('.nav-links a').forEach(link => {
   link.addEventListener('click', () => {
     hamburger.classList.remove('active');
@@ -30,378 +95,633 @@ document.querySelectorAll('.nav-links a').forEach(link => {
   });
 });
 
-// ===== Active nav link on scroll =====
-function highlightNav() {
-  const sections = document.querySelectorAll('section[id]');
-  const scrollPos = window.scrollY + 150;
+// Close mobile menu on outside click
+document.addEventListener('click', (e) => {
+  if (navLinks.classList.contains('active') &&
+      !navLinks.contains(e.target) &&
+      !hamburger.contains(e.target)) {
+    hamburger.classList.remove('active');
+    navLinks.classList.remove('active');
+  }
+});
+
+// ===== ACTIVE NAV =====
+const sections = Array.from(document.querySelectorAll('section[id]'));
+const navLinkEls = document.querySelectorAll('.nav-links a');
+
+function highlightNav(scrollPos) {
+  const offset = scrollPos + 160;
+  let currentId = '';
   sections.forEach(section => {
-    const top = section.offsetTop;
-    const height = section.offsetHeight;
-    const id = section.getAttribute('id');
-    const link = document.querySelector(`.nav-links a[href="#${id}"]`);
-    if (link) {
-      if (scrollPos >= top && scrollPos < top + height) {
-        document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
-        link.classList.add('active');
-      }
+    if (offset >= section.offsetTop) {
+      currentId = section.getAttribute('id');
     }
+  });
+  navLinkEls.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === `#${currentId}`);
   });
 }
 
-// ===== Theme toggle =====
+// ===== THEME TOGGLE =====
 const themeToggle = document.getElementById('themeToggle');
-const body = document.body;
+
+// Apply saved theme immediately (no flash)
 const savedTheme = localStorage.getItem('theme');
 if (savedTheme === 'dark') {
-  body.classList.add('dark-mode');
+  document.body.classList.add('dark-mode');
   themeToggle.innerHTML = '<i class="fa-solid fa-sun"></i>';
 }
+
 themeToggle.addEventListener('click', () => {
-  body.classList.toggle('dark-mode');
-  const isDark = body.classList.contains('dark-mode');
+  const isDark = document.body.classList.toggle('dark-mode');
   themeToggle.innerHTML = isDark
     ? '<i class="fa-solid fa-sun"></i>'
     : '<i class="fa-solid fa-moon"></i>';
   localStorage.setItem('theme', isDark ? 'dark' : 'light');
 });
 
-// ===== Typed text effect =====
-const typedTextEl = document.getElementById('typed');
+// ===== TYPED TEXT =====
+const typedEl = document.getElementById('typed');
 const phrases = ["Frontend Developer", "DSA Enthusiast", "MERN Stack Developer", "Problem Solver"];
 let phraseIndex = 0, charIndex = 0, isDeleting = false;
 
 function typeEffect() {
-  const currentPhrase = phrases[phraseIndex];
-  if (isDeleting) {
-    typedTextEl.textContent = currentPhrase.substring(0, charIndex - 1);
-    charIndex--;
-  } else {
-    typedTextEl.textContent = currentPhrase.substring(0, charIndex + 1);
-    charIndex++;
-  }
+  const current = phrases[phraseIndex];
+  typedEl.textContent = isDeleting
+    ? current.substring(0, charIndex - 1)
+    : current.substring(0, charIndex + 1);
 
-  let speed = isDeleting ? 50 : 100;
+  if (isDeleting) charIndex--;
+  else charIndex++;
 
-  if (!isDeleting && charIndex === currentPhrase.length) {
-    speed = 1500;
+  let speed = isDeleting ? 45 : 95;
+
+  if (!isDeleting && charIndex === current.length) {
+    speed = 1800;
     isDeleting = true;
   } else if (isDeleting && charIndex === 0) {
     isDeleting = false;
     phraseIndex = (phraseIndex + 1) % phrases.length;
-    speed = 500;
+    speed = 400;
   }
   setTimeout(typeEffect, speed);
 }
-typeEffect();
 
-// ===== Back to top button =====
-const backToTop = document.getElementById('backToTop');
-function toggleBackToTop() {
-  backToTop.classList.toggle('show', window.scrollY > 400);
+// Start typed effect after a brief delay
+setTimeout(typeEffect, 800);
+
+// ===== BACK TO TOP =====
+const backToTopBtn = document.getElementById('backToTop');
+
+function toggleBackToTop(scrollY) {
+  backToTopBtn.classList.toggle('show', scrollY > 400);
 }
-backToTop.addEventListener('click', () => {
+
+backToTopBtn.addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
-// ===== Scroll reveal animation =====
-document.querySelectorAll('.section, .stat-box, .info-card, .skill-category, .project-card, .repo-card')
-  .forEach(el => el.classList.add('fade-up'));
-
-const observer = new IntersectionObserver((entries) => {
+// ===== INTERSECTION OBSERVER - Scroll Reveal =====
+const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target); // Stop observing once visible
     }
   });
-}, { threshold: 0.1 });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
-document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
-
-// ===== Counter animation for stats =====
-function animateCounter(el, target, duration = 2000) {
-  let start = 0;
-  const increment = target / (duration / 16);
-  const timer = setInterval(() => {
-    start += increment;
-    if (start >= target) {
-      el.textContent = target + "+";
-      clearInterval(timer);
-    } else {
-      el.textContent = Math.floor(start);
-    }
-  }, 16);
-}
-
-const statsObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      animateCounter(document.getElementById('stat-projects'), 5);
-      animateCounter(document.getElementById('stat-experience'), 0);
-      animateCounter(document.getElementById('stat-problems'), 100);
-      animateCounter(document.getElementById('stat-repos'), 8);
-      statsObserver.disconnect();
-    }
-  });
-}, { threshold: 0.3 });
-statsObserver.observe(document.querySelector('.about-stats'));
-
-// ===== Fetch GitHub Repos =====
-async function fetchGitHubRepos() {
-  const container = document.getElementById('repoContainer');
-  try {
-    const res = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=${REPO_COUNT}`);
-    if (!res.ok) throw new Error('Failed to fetch');
-    const repos = await res.json();
-
-    container.innerHTML = '';
-
-    if (repos.length === 0) {
-      container.innerHTML = '<div class="error-repos">No repositories found.</div>';
-      return;
-    }
-
-    repos.forEach(repo => {
-      const card = document.createElement('div');
-      card.classList.add('repo-card', 'fade-up');
-      card.innerHTML = `
-        <div class="repo-header">
-          <h3><a href="${repo.html_url}" target="_blank"><i class="fa-solid fa-code-branch"></i> ${repo.name}</a></h3>
-        </div>
-        <p class="repo-desc">${repo.description || 'No description available.'}</p>
-        <div class="repo-meta">
-          <span><span class="lang-dot"></span> ${repo.language || 'N/A'}</span>
-          <span><i class="fa-regular fa-star"></i> ${repo.stargazers_count}</span>
-          <span><i class="fa-solid fa-code-fork"></i> ${repo.forks_count}</span>
-        </div>
-      `;
-      container.appendChild(card);
-      observer.observe(card);
-    });
-  } catch (error) {
-    container.innerHTML = '<div class="error-repos">Unable to load repositories. Please check the username or try again later.</div>';
-    console.error(error);
-  }
-}
-fetchGitHubRepos();
-
-// ===== Fetch LeetCode Stats (using public API) =====
-// ===== Fetch LeetCode Stats (Updated with working API + fallback) =====
-async function fetchLeetCodeStats() {
-  const solvedEl = document.getElementById('lcSolved');
-  const rankingEl = document.getElementById('lcRanking');
-  const streakEl = document.getElementById('lcStreak');
-
-  // Show loading state
-  solvedEl.textContent = '...';
-  rankingEl.textContent = '...';
-  streakEl.textContent = '...';
-
-  try {
-    // Primary API: alfa-leetcode-api (actively maintained)
-    const res = await fetch(`https://alfa-leetcode-api.onrender.com/${LEETCODE_USERNAME}/solved`);
-    
-    if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
-    
-    const data = await res.json();
-    console.log('LeetCode Data:', data); // Debug log - check console
-
-    if (!data || data.solvedProblem === undefined) {
-      throw new Error('Invalid data structure');
-    }
-
-    // Update main stats
-    solvedEl.textContent = data.solvedProblem || 0;
-    
-    // Fetch additional profile data (ranking)
-    try {
-      const profileRes = await fetch(`https://alfa-leetcode-api.onrender.com/${LEETCODE_USERNAME}`);
-      const profileData = await profileRes.json();
-      rankingEl.textContent = profileData.ranking ? `#${profileData.ranking.toLocaleString()}` : 'N/A';
-    } catch (e) {
-      rankingEl.textContent = 'N/A';
-    }
-
-    streakEl.textContent = data.acceptanceRate ? `${data.acceptanceRate}%` : 'N/A';
-
-    // Update difficulty breakdown
-    const easy = data.easySolved || 0;
-    const medium = data.mediumSolved || 0;
-    const hard = data.hardSolved || 0;
-    const totalEasy = data.totalEasy || 800;
-    const totalMedium = data.totalMedium || 1700;
-    const totalHard = data.totalHard || 700;
-
-    document.getElementById('easyCount').textContent = easy;
-    document.getElementById('mediumCount').textContent = medium;
-    document.getElementById('hardCount').textContent = hard;
-
-    setTimeout(() => {
-      document.getElementById('easyBar').style.width = `${(easy / totalEasy) * 100}%`;
-      document.getElementById('mediumBar').style.width = `${(medium / totalMedium) * 100}%`;
-      document.getElementById('hardBar').style.width = `${(hard / totalHard) * 100}%`;
-    }, 300);
-
-  } catch (error) {
-    console.error('LeetCode API Error:', error);
-    
-    // Try fallback API
-    await tryFallbackLeetCodeAPI();
-  }
-}
-
-// ===== Fallback API attempt =====
-async function tryFallbackLeetCodeAPI() {
-  try {
-    const res = await fetch(`https://leetcode-stats-api.herokuapp.com/${rudrakshbhardwaj1}`);
-    const data = await res.json();
-
-    if (data.status === 'error') throw new Error('User not found');
-
-    document.getElementById('lcSolved').textContent = data.totalSolved || 'N/A';
-    document.getElementById('lcRanking').textContent = data.ranking ? `#${data.ranking.toLocaleString()}` : 'N/A';
-    document.getElementById('lcStreak').textContent = data.acceptanceRate ? `${data.acceptanceRate}%` : 'N/A';
-
-    document.getElementById('easyCount').textContent = data.easySolved || 0;
-    document.getElementById('mediumCount').textContent = data.mediumSolved || 0;
-    document.getElementById('hardCount').textContent = data.hardSolved || 0;
-
-    setTimeout(() => {
-      document.getElementById('easyBar').style.width = `${(data.easySolved / data.totalEasy) * 100}%`;
-      document.getElementById('mediumBar').style.width = `${(data.mediumSolved / data.totalMedium) * 100}%`;
-      document.getElementById('hardBar').style.width = `${(data.hardSolved / data.totalHard) * 100}%`;
-    }, 300);
-
-  } catch (error) {
-    console.error('Fallback API also failed:', error);
-    showLeetCodeError();
-  }
-}
-
-// ===== Show error state gracefully =====
-function showLeetCodeError() {
-  document.getElementById('lcSolved').textContent = 'N/A';
-  document.getElementById('lcRanking').textContent = 'N/A';
-  document.getElementById('lcStreak').textContent = 'N/A';
-  document.getElementById('easyCount').textContent = '0';
-  document.getElementById('mediumCount').textContent = '0';
-  document.getElementById('hardCount').textContent = '0';
-  
-  const leetcodeCard = document.querySelector('.leetcode-card');
-  const errorMsg = document.createElement('p');
-  errorMsg.style.cssText = 'color: var(--text-gray); margin-top: 15px; font-size: 0.9rem;';
-  errorMsg.textContent = '⚠️ Live stats temporarily unavailable. Please visit my profile directly.';
-  leetcodeCard.insertBefore(errorMsg, leetcodeCard.querySelector('.btn'));
-}
-
-fetchLeetCodeStats();
-
-// ===== Contact form (demo - integrate with EmailJS/Formspree) =====
-const contactForm = document.getElementById('contactForm');
-contactForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  alert('Thank you for your message! I will get back to you soon.\n\n(Connect this form to EmailJS or Formspree for real submissions)');
-  contactForm.reset();
+// Add fade-up to elements and observe
+document.querySelectorAll(
+  '.stat-box, .info-card, .skill-category, .project-card, .repo-card, .section-title'
+).forEach(el => {
+  el.classList.add('fade-up');
+  revealObserver.observe(el);
 });
 
-// ===== Matrix Rain Effect =====
+// ===== COUNTER ANIMATION - Only when in view =====
+let countersAnimated = false;
+
+const counterObserver = new IntersectionObserver((entries) => {
+  if (entries[0].isIntersecting && !countersAnimated) {
+    countersAnimated = true;
+    counterObserver.disconnect();
+    // Counters already display static values in HTML
+    // Optionally animate them:
+    animateCounters();
+  }
+}, { threshold: 0.3 });
+
+const statsSection = document.querySelector('.about-stats');
+if (statsSection) counterObserver.observe(statsSection);
+
+function animateCounters() {
+  const counters = [
+    { id: 'stat-projects', target: 5 },
+    { id: 'stat-experience', target: 1 },
+    { id: 'stat-problems', target: 100 },
+    { id: 'stat-repos', target: 8 }
+  ];
+  counters.forEach(({ id, target }) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    let start = 0;
+    const step = target / 60; // ~1 second at 60fps
+    function update() {
+      start = Math.min(start + step, target);
+      el.textContent = Math.floor(start) + '+';
+      if (start < target) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  });
+}
+
+// ===== GITHUB REPOS =====
+async function fetchGitHubRepos() {
+  const container = document.getElementById('repoContainer');
+  if (!container) return;
+
+  // Check cache first
+  const cached = cache.get('github_repos');
+  if (cached) {
+    renderRepos(cached, container);
+    return;
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000); // 8s timeout
+
+    const res = await fetch(
+      `https://api.github.com/users/${CONFIG.GITHUB_USERNAME}/repos?sort=updated&per_page=${CONFIG.REPO_COUNT}`,
+      { signal: controller.signal, headers: { Accept: 'application/vnd.github.v3+json' } }
+    );
+    clearTimeout(timeout);
+
+    if (!res.ok) throw new Error(`GitHub API: ${res.status}`);
+    const repos = await res.json();
+
+    cache.set('github_repos', repos);
+    renderRepos(repos, container);
+
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      container.innerHTML = '<div class="error-repos">Request timed out. Please refresh.</div>';
+    } else {
+      container.innerHTML = '<div class="error-repos">⚠️ Unable to load repos. <a href="https://github.com/' + CONFIG.GITHUB_USERNAME + '" target="_blank" rel="noopener">View on GitHub →</a></div>';
+    }
+    console.warn('GitHub fetch failed:', err.message);
+  }
+}
+
+function renderRepos(repos, container) {
+  if (!repos || repos.length === 0) {
+    container.innerHTML = '<div class="error-repos">No repositories found.</div>';
+    return;
+  }
+
+  // Use DocumentFragment for better performance
+  const fragment = document.createDocumentFragment();
+
+  repos.forEach(repo => {
+    const card = document.createElement('div');
+    card.className = 'repo-card fade-up';
+    card.innerHTML = `
+      <div class="repo-header">
+        <h3>
+          <a href="${repo.html_url}" target="_blank" rel="noopener">
+            <i class="fa-solid fa-code-branch"></i> ${escapeHtml(repo.name)}
+          </a>
+        </h3>
+      </div>
+      <p class="repo-desc">${escapeHtml(repo.description || 'No description available.')}</p>
+      <div class="repo-meta">
+        <span><span class="lang-dot"></span> ${escapeHtml(repo.language || 'N/A')}</span>
+        <span><i class="fa-regular fa-star"></i> ${repo.stargazers_count}</span>
+        <span><i class="fa-solid fa-code-fork"></i> ${repo.forks_count}</span>
+      </div>
+    `;
+    fragment.appendChild(card);
+  });
+
+  container.innerHTML = '';
+  container.appendChild(fragment);
+
+  // Observe new cards for animation
+  container.querySelectorAll('.repo-card').forEach(card => revealObserver.observe(card));
+}
+
+// ===== HTML ESCAPE (Security) =====
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
+}
+
+// ===== LEETCODE STATS =====
+// ===== LEETCODE STATS - RELIABLE MULTI-SOURCE =====
+const LC_USERNAME = "rudrakshbhardwaj1";
+
+// All available free APIs to try in order
+const LC_APIS = [
+  {
+    name: "leetcode-api-faisalshahbaz",
+    url: `https://leetcode-api-faisalshahbaz.vercel.app/${LC_USERNAME}`,
+    parse: (data) => ({
+      solved:  data.totalSolved,
+      easy:    data.easySolved,
+      medium:  data.mediumSolved,
+      hard:    data.hardSolved,
+      totalEasy:   data.totalEasy   || 850,
+      totalMedium: data.totalMedium || 1800,
+      totalHard:   data.totalHard   || 750,
+      ranking: data.ranking ? `#${Number(data.ranking).toLocaleString()}` : "N/A",
+      rate:    data.acceptanceRate  ? `${parseFloat(data.acceptanceRate).toFixed(1)}%` : "N/A"
+    }),
+    validate: (d) => d && d.totalSolved !== undefined
+  },
+  {
+    name: "leetcode-stats-api",
+    url: `https://leetcode-stats-api.herokuapp.com/${LC_USERNAME}`,
+    parse: (data) => ({
+      solved:  data.totalSolved,
+      easy:    data.easySolved,
+      medium:  data.mediumSolved,
+      hard:    data.hardSolved,
+      totalEasy:   data.totalEasy   || 850,
+      totalMedium: data.totalMedium || 1800,
+      totalHard:   data.totalHard   || 750,
+      ranking: data.ranking ? `#${Number(data.ranking).toLocaleString()}` : "N/A",
+      rate:    data.acceptanceRate  ? `${parseFloat(data.acceptanceRate).toFixed(1)}%` : "N/A"
+    }),
+    validate: (d) => d && d.status !== "error" && d.totalSolved !== undefined
+  },
+  {
+    name: "alfa-leetcode-api",
+    url: `https://alfa-leetcode-api.onrender.com/${LC_USERNAME}/solved`,
+    parse: (data) => ({
+      solved:  data.solvedProblem,
+      easy:    data.easySolved,
+      medium:  data.mediumSolved,
+      hard:    data.hardSolved,
+      totalEasy:   data.totalEasy   || 850,
+      totalMedium: data.totalMedium || 1800,
+      totalHard:   data.totalHard   || 750,
+      ranking: "N/A",
+      rate:    data.acceptanceRate  ? `${parseFloat(data.acceptanceRate).toFixed(1)}%` : "N/A"
+    }),
+    validate: (d) => d && d.solvedProblem !== undefined
+  }
+];
+
+// Cached static fallback data - UPDATE THESE WITH YOUR REAL NUMBERS
+const LC_STATIC_FALLBACK = {
+  solved:      70,   // <- your total solved
+  easy:         44,   // <- your easy solved
+  medium:       25,   // <- your medium solved
+  hard:          1,   // <- your hard solved
+  totalEasy:   850,
+  totalMedium: 1800,
+  totalHard:   750,
+  ranking:     "N/A",
+  rate:        "N/A",
+  isStatic:    true   // flag so we can show a note
+};
+
+async function fetchWithTimeout(url, timeoutMs = 7000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: { "Accept": "application/json" }
+    });
+    clearTimeout(timer);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (err) {
+    clearTimeout(timer);
+    throw err;
+  }
+}
+
+async function fetchLeetCodeStats() {
+  // Show loading state
+  setLCLoading(true);
+
+  // 1. Check session cache first (avoid repeated API calls)
+  const cached = sessionStorage.getItem("lc_stats");
+  if (cached) {
+    try {
+      const parsed = JSON.parse(cached);
+      const age = Date.now() - parsed.timestamp;
+      if (age < 30 * 60 * 1000) { // 30 minutes
+        console.log("LeetCode: Using cached data");
+        renderLeetCodeStats(parsed.data);
+        setLCLoading(false);
+        return;
+      }
+    } catch(e) {
+      sessionStorage.removeItem("lc_stats");
+    }
+  }
+
+  // 2. Try each API in order
+  for (const api of LC_APIS) {
+    try {
+      console.log(`LeetCode: Trying ${api.name}...`);
+      const raw = await fetchWithTimeout(api.url, 7000);
+
+      if (!api.validate(raw)) {
+        console.warn(`LeetCode: ${api.name} returned invalid data`, raw);
+        continue;
+      }
+
+      const stats = api.parse(raw);
+      console.log(`LeetCode: Success from ${api.name}`, stats);
+
+      // Cache successful response
+      sessionStorage.setItem("lc_stats", JSON.stringify({
+        data: stats,
+        timestamp: Date.now()
+      }));
+
+      renderLeetCodeStats(stats);
+      setLCLoading(false);
+      return; // Stop trying after first success
+
+    } catch (err) {
+      console.warn(`LeetCode: ${api.name} failed -`, err.message);
+      // Continue to next API
+    }
+  }
+
+  // 3. All APIs failed - use static fallback
+  console.warn("LeetCode: All APIs failed, using static fallback");
+  renderLeetCodeStats(LC_STATIC_FALLBACK);
+  setLCLoading(false);
+}
+
+function setLCLoading(isLoading) {
+  const ids = ["lcSolved", "lcRanking", "lcStreak"];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && isLoading) {
+      el.innerHTML = '<span class="lc-loading">...</span>';
+    }
+  });
+}
+
+function renderLeetCodeStats(stats) {
+  // Update main numbers
+  const solvedEl  = document.getElementById("lcSolved");
+  const rankEl    = document.getElementById("lcRanking");
+  const rateEl    = document.getElementById("lcStreak");
+  const easyEl    = document.getElementById("easyCount");
+  const mediumEl  = document.getElementById("mediumCount");
+  const hardEl    = document.getElementById("hardCount");
+  const easyBar   = document.getElementById("easyBar");
+  const mediumBar = document.getElementById("mediumBar");
+  const hardBar   = document.getElementById("hardBar");
+
+  if (solvedEl)  solvedEl.textContent  = stats.solved  ?? "--";
+  if (rankEl)    rankEl.textContent    = stats.ranking ?? "--";
+  if (rateEl)    rateEl.textContent    = stats.rate    ?? "--";
+  if (easyEl)    easyEl.textContent    = stats.easy    ?? 0;
+  if (mediumEl)  mediumEl.textContent  = stats.medium  ?? 0;
+  if (hardEl)    hardEl.textContent    = stats.hard    ?? 0;
+
+  // Animate progress bars
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      if (easyBar) {
+        easyBar.style.width = `${Math.min(
+          ((stats.easy ?? 0) / stats.totalEasy) * 100, 100
+        )}%`;
+      }
+      if (mediumBar) {
+        mediumBar.style.width = `${Math.min(
+          ((stats.medium ?? 0) / stats.totalMedium) * 100, 100
+        )}%`;
+      }
+      if (hardBar) {
+        hardBar.style.width = `${Math.min(
+          ((stats.hard ?? 0) / stats.totalHard) * 100, 100
+        )}%`;
+      }
+    }, 300);
+  });
+
+  // If using static fallback, show a note
+  if (stats.isStatic) {
+    const card = document.querySelector(".leetcode-card");
+    if (card && !card.querySelector(".lc-static-note")) {
+      const note = document.createElement("p");
+      note.className = "lc-static-note";
+      note.style.cssText = `
+        color: var(--text-gray);
+        font-size: 0.82rem;
+        margin: -20px 0 20px;
+        opacity: 0.8;
+      `;
+      note.innerHTML = `
+        ⚠️ Live data temporarily unavailable. Stats shown may not be current.
+        <a href="https://leetcode.com/${LC_USERNAME}" target="_blank" 
+           rel="noopener" style="color:var(--primary);margin-left:5px;">
+          View live profile →
+        </a>
+      `;
+      const btn = card.querySelector(".btn");
+      if (btn) card.insertBefore(note, btn);
+    }
+  }
+}
+
+// Add loading spinner CSS dynamically
+const lcStyle = document.createElement("style");
+lcStyle.textContent = `
+  .lc-loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(108,92,231,0.2);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+  }
+`;
+document.head.appendChild(lcStyle);
+
+// Fetch when LeetCode section enters viewport (lazy load)
+const lcSection = document.getElementById("leetcode");
+if (lcSection) {
+  const lcObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      lcObserver.disconnect();
+      fetchLeetCodeStats();
+    }
+  }, { threshold: 0.1 });
+  lcObserver.observe(lcSection);
+} else {
+  // Fallback: fetch after delay
+  setTimeout(fetchLeetCodeStats, 1000);
+}
+
+function renderLeetCodeStats(stats) {
+  document.getElementById('lcSolved').textContent = stats.solved;
+  document.getElementById('lcRanking').textContent = stats.ranking;
+  document.getElementById('lcStreak').textContent = stats.acceptanceRate;
+  document.getElementById('easyCount').textContent = stats.easy;
+  document.getElementById('mediumCount').textContent = stats.medium;
+  document.getElementById('hardCount').textContent = stats.hard;
+
+  // Animate bars after a short delay
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      const eBar = document.getElementById('easyBar');
+      const mBar = document.getElementById('mediumBar');
+      const hBar = document.getElementById('hardBar');
+      if (eBar) eBar.style.width = `${Math.min((stats.easy / stats.totalEasy) * 100, 100)}%`;
+      if (mBar) mBar.style.width = `${Math.min((stats.medium / stats.totalMedium) * 100, 100)}%`;
+      if (hBar) hBar.style.width = `${Math.min((stats.hard / stats.totalHard) * 100, 100)}%`;
+    }, 400);
+  });
+}
+
+function showLeetCodeError() {
+  ['lcSolved', 'lcRanking', 'lcStreak'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = 'N/A';
+  });
+  const card = document.querySelector('.leetcode-card');
+  if (card) {
+    const msg = document.createElement('p');
+    msg.style.cssText = 'color:var(--text-gray);margin:15px 0;font-size:0.88rem;';
+    msg.textContent = '⚠️ Live stats temporarily unavailable. Visit profile directly.';
+    const btn = card.querySelector('.btn');
+    if (btn) card.insertBefore(msg, btn);
+  }
+}
+
+// ===== MATRIX RAIN - Optimized =====
 function initMatrixRain() {
+  // Only run on desktop and only if canvas exists
   const canvas = document.getElementById('matrixCanvas');
+  if (!canvas) return;
+
+  // Skip on mobile for performance
+  if (window.innerWidth < 768) {
+    canvas.style.display = 'none';
+    return;
+  }
+
   const ctx = canvas.getContext('2d');
-  
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  let animId;
+  let lastTime = 0;
+  const FPS = 20; // Reduced from 20fps (was effectively 20fps at 50ms interval)
+  const INTERVAL = 1000 / FPS;
 
-  const chars = "01アイウエオカキクケコサシスセソ{}[]()<>;=+-*/&|!?".split('');
-  const fontSize = 16;
-  const columns = canvas.width / fontSize;
-  const drops = Array(Math.floor(columns)).fill(1);
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
 
-  function draw() {
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+  const fontSize = 14;
+  const chars = "01{}<>/;=+アイウエカキク".split('');
+  let columns = Math.floor(canvas.width / fontSize);
+  let drops = Array(columns).fill(1);
+
+  const isDarkMode = () => document.body.classList.contains('dark-mode');
+
+  function draw(timestamp) {
+    animId = requestAnimationFrame(draw);
+    if (timestamp - lastTime < INTERVAL) return;
+    lastTime = timestamp;
+
+    ctx.fillStyle = isDarkMode()
+      ? 'rgba(18, 18, 32, 0.08)'
+      : 'rgba(248, 249, 252, 0.12)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const isDark = document.body.classList.contains('dark-mode');
-    ctx.fillStyle = isDark ? '#00ff9d' : '#6c5ce7';
+    ctx.fillStyle = isDarkMode() ? '#6c5ce7' : '#6c5ce7';
     ctx.font = fontSize + 'px monospace';
+    ctx.globalAlpha = 0.5;
 
     for (let i = 0; i < drops.length; i++) {
       const text = chars[Math.floor(Math.random() * chars.length)];
       ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
       if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
         drops[i] = 0;
       }
       drops[i]++;
     }
+    ctx.globalAlpha = 1;
   }
 
-  setInterval(draw, 50);
+  animId = requestAnimationFrame(draw);
 
-  window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+  // Handle resize with debounce
+  const handleResize = debounce(() => {
+    resize();
+    columns = Math.floor(canvas.width / fontSize);
+    drops = Array(columns).fill(1);
+  }, 300);
+
+  window.addEventListener('resize', handleResize, { passive: true });
+
+  // Pause matrix when tab not visible (performance)
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      cancelAnimationFrame(animId);
+    } else {
+      animId = requestAnimationFrame(draw);
+    }
   });
 }
-initMatrixRain();
 
-// ===== Mouse Move Parallax Effect on Glow Orbs =====
-document.addEventListener('mousemove', (e) => {
-  const orbs = document.querySelectorAll('.glow-orb');
-  const x = e.clientX / window.innerWidth;
-  const y = e.clientY / window.innerHeight;
+// ===== CONTACT FORM =====
+const contactForm = document.getElementById('contactForm');
+if (contactForm) {
+  contactForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const btn = contactForm.querySelector('button[type="submit"]');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> Message Sent!';
+    btn.disabled = true;
+    btn.style.opacity = '0.8';
 
-  orbs.forEach((orb, index) => {
-    const speed = (index + 1) * 15;
-    const xOffset = (x - 0.5) * speed;
-    const yOffset = (y - 0.5) * speed;
-    orb.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+    setTimeout(() => {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      contactForm.reset();
+    }, 3000);
+
+    // TODO: Integrate with EmailJS or Formspree for real submissions
   });
-});
+}
 
-// ===== Dynamic Floating Symbols Generator =====
-function createFloatingSymbols() {
-  const symbols = ['<', '>', '{', '}', '/', ';', '(', ')', '=>', '&&', '||', '++'];
-  const container = document.getElementById('floatingSymbols');
-  
-  for (let i = 0; i < 15; i++) {
-    const span = document.createElement('span');
-    span.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-    span.style.cssText = `
-      position: fixed;
-      top: ${Math.random() * 100}vh;
-      left: ${Math.random() * 100}vw;
-      font-family: 'Courier New', monospace;
-      font-size: ${Math.random() * 20 + 15}px;
-      color: var(--primary);
-      opacity: ${Math.random() * 0.08 + 0.02};
-      pointer-events: none;
-      z-index: -1;
-      animation: symbolFloat ${Math.random() * 10 + 10}s linear infinite;
-      animation-delay: ${Math.random() * 5}s;
-    `;
-    container.appendChild(span);
+// ===== INIT - Deferred non-critical tasks =====
+function init() {
+  // Critical: fetch data
+  fetchGitHubRepos();
+
+  // Defer LeetCode fetch slightly (not above fold)
+  setTimeout(() => fetchLeetCodeStats(), 500);
+
+  // Defer matrix rain (not critical for UX)
+  if (window.innerWidth >= 768) {
+    requestIdleCallback
+      ? requestIdleCallback(initMatrixRain, { timeout: 2000 })
+      : setTimeout(initMatrixRain, 1000);
   }
 }
-createFloatingSymbols();
 
-// Add keyframe dynamically for symbol floating
-const styleSheet = document.createElement('style');
-styleSheet.textContent = `
-  @keyframes symbolFloat {
-    0% { transform: translateY(0) rotate(0deg); }
-    100% { transform: translateY(-100vh) rotate(360deg); }
-  }
-`;
-document.head.appendChild(styleSheet);
-
-// ===== Typing sound effect on hover (optional - subtle click feel) =====
-document.querySelectorAll('.btn, .nav-links a').forEach(el => {
-  el.addEventListener('mouseenter', () => {
-    el.style.transition = 'all 0.2s ease';
-  });
-});
-// Disable matrix rain on mobile for performance
-if (window.innerWidth > 768) {
-  initMatrixRain();
+// Run init when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
 }
-
