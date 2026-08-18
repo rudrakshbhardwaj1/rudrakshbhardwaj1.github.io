@@ -348,6 +348,59 @@
         Loading repositories...
       </div>
     </div>
+<div>
+  <h2>GitHub Activity</h2>
+  <img 
+    id="ghchart"
+    src="https://ghchart.rshah.org/2ea44f/rudrakshbhardwaj1" 
+    alt="Rudraksh's GitHub Contribution Chart" 
+    style="width:100%; max-width:800px; border-radius:6px; transition: filter 0.3s ease;"
+  />
+</div>
+
+<script>
+function isSiteDark() {
+  const html = document.documentElement;
+  const body = document.body;
+  return (
+    html.classList.contains("dark") ||
+    html.classList.contains("dark-mode") ||
+    body.classList.contains("dark") ||
+    body.classList.contains("dark-mode") ||
+    html.getAttribute("data-theme") === "dark" ||
+    localStorage.getItem("theme") === "dark"
+  );
+}
+
+function updateChartTheme() {
+  const chart = document.getElementById("ghchart");
+  if (!chart) return;
+  chart.style.filter = isSiteDark()
+    ? "invert(90%) hue-rotate(180deg) brightness(0.95) contrast(1.05)"
+    : "none";
+}
+
+// Run on load
+updateChartTheme();
+
+// Watch for class/attribute changes on <html> and <body> (covers toggle clicks)
+const observer = new MutationObserver(updateChartTheme);
+observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class", "data-theme"] });
+observer.observe(document.body, { attributes: true, attributeFilter: ["class", "data-theme"] });
+</script>
+
+<style>
+  #ghchart {
+    border-radius: 6px;
+    transition: filter 0.3s ease;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #ghchart {
+      filter: invert(90%) hue-rotate(180deg) brightness(0.95) contrast(1.05);
+    }
+  }
+</style>
     <div class="github-cta">
       <a href="https://github.com/rudrakshbhardwaj1" target="_blank" rel="noopener" class="btn btn-primary">
         <i class="fa-brands fa-github"></i> View All on GitHub
@@ -395,6 +448,7 @@
           <span id="hardCount">0</span>
         </div>
       </div>
+      
       <a href="https://leetcode.com/rudrakshbhardwaj1" target="_blank" rel="noopener" class="btn btn-primary">
         <i class="fa-solid fa-code"></i> View LeetCode Profile
       </a>
